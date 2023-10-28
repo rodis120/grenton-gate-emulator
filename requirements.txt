@@ -1,0 +1,4 @@
+cryptography>=41.0.4
+lupa>=2.0
+pyvlx>=0.2.20
+paho-mqtt>=1.6.1

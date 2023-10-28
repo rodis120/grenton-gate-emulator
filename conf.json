@@ -1,0 +1,8 @@
+{
+    "serial_number": 2882400018,
+    "mac": "01:23:45:67:89:ab",
+    "private_key": "12345678",
+
+    "velux_ip": "192.168.1.100",
+    "velux_password": "asdfasdf"
+}

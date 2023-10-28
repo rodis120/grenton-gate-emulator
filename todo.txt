@@ -1,0 +1,8 @@
+Create module manager
+Implement objects
+Implement tftp server
+Implement mqtt connection with grenton cloud
+Repair clu discovery
+Rewrite clu commands
+Implement measurements
+Add input validation
