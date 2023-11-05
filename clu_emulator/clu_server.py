@@ -61,8 +61,8 @@ class CluServer:
 
         self.commands: dict[str, CLUCommand] = {}
 
-        self.registerCommand(SimpleHandlerCommand("req_start_ftp", self.start_ftp, "resp:OK"))
-        self.registerCommand(SimpleHandlerCommand("req_tftp_stop", self.stop_ftp, "resp:OK"))
+        self.register_command(SimpleHandlerCommand("req_start_ftp", self.start_ftp, "resp:OK"))
+        self.register_command(SimpleHandlerCommand("req_tftp_stop", self.stop_ftp, "resp:OK"))
         
     def start(self) -> None:
         self.sock.bind(("", 1234))
@@ -98,7 +98,7 @@ class CluServer:
             raise TypeError("handler must be callable")
         self.key_change_handler = handler
 
-    def registerCommand(self, command: CLUCommand) -> None:
+    def register_command(self, command: CLUCommand) -> None:
         self.commands[command.name] = command
         
     def _listener_loop(self):
@@ -156,12 +156,12 @@ class CluServer:
             resp = self.lua_handler(req_context, payload)
             resp_message = f"resp:{self.hostip}:{session_id}:{resp}"
             
-            logging.info(f"Sending response to {sender_addr[0]}:{sender_addr[1]}")
-            logging.info(f"Response payload: {resp}")
+            print(f"Sending response to {sender_addr[0]}:{sender_addr[1]}")
+            print(f"Response payload: {resp}")
             self.sock.sendto(self.project_cipher.encrypt(resp_message.encode()), sender_addr)
         
         else:
-            logging.info("Ignoring request.")
+            print("Ignoring request.")
 
     def _handle_clu_command(self, cmd: str, return_addr):
         logging.info(f'Recived clu command "{cmd}" from {return_addr[0]}:{return_addr[1]}')

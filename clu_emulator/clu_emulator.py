@@ -38,9 +38,9 @@ class CluEmulator:
         self.clu_server.set_lua_request_handler(self.lua_engine.execute)
         self.clu_cloud.set_request_handler(self.lua_engine.execute)
 
-        self.clu_server.registerCommand(SimpleHandlerCommand("req_reset", self.lua_engine.reload, "resp_reset"))
-        self.clu_server.registerCommand(SimpleHandlerCommand("req_gen_measurements", lambda *args: self.clu_server.start_ftp(), "ok"))
-        self.clu_server.registerCommand(SimpleHandlerCommand("meas_file_download", lambda *args: self.clu_server.stop_ftp(), "ok"))
+        self.clu_server.register_command(SimpleHandlerCommand("req_reset", self.lua_engine.reload, "resp_reset"))
+        self.clu_server.register_command(SimpleHandlerCommand("req_gen_measurements", lambda *args: self.clu_server.start_ftp(), "ok"))
+        self.clu_server.register_command(SimpleHandlerCommand("meas_file_download", lambda *args: self.clu_server.stop_ftp(), "ok"))
 
     def start(self):
         self.clu_server.start()

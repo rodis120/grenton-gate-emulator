@@ -10,7 +10,7 @@ from .objects.gate_object import GateObject
 from .objects.grenton_object import GrentonObject
 from .objects.objects import OBJECT_CLASS_DICT
 from .types import RequestContext
-from .utils import fetch_feature_values, parse_features_list
+from .utils import fetch_values, parse_observables_list
 
 
 class CluLuaEngine:
@@ -86,26 +86,49 @@ class CluLuaEngine:
     def _check_alive(self):
         return hex(self.config.serial_number)[2:]
     
-    def _fetch_values(self, _, features) -> str:
-        values = parse_features_list(features)
-        
-        return f"values:{fetch_feature_values(values)}"
+    def _fetch_values(self, _, obs) -> str:
+        objects = parse_observables_list(obs)
     
-    def _register_client(self, _, ip, port, client_id, features) -> str:
-        values = parse_features_list(features)
+        values = []
+        for obj in objects:
+            if isinstance(obj, str):
+                values.append(self.lua.eval(obj))
+            else:
+                values.append(obj.get_value())
         
-        self.client_manager.register_client(ip, port, client_id, self.req_context.session_id, values)
-        return f"clientReport:{client_id}:{fetch_feature_values(values)}"
+        return f"values:{fetch_values(values)}"
+    
+    def _register_client(self, _, ip, port, client_id, obs) -> str:
+        objects = parse_observables_list(obs)
+    
+        values = []
+        for obj in objects:
+            if isinstance(obj, str):
+                values.append(self.lua.eval(obj))
+            else:
+                values.append(obj.get_value())
+        
+        self.client_manager.register_client(self.lua, ip, port, client_id, self.req_context.session_id, objects)
+        t = f"clientReport:{client_id}:{fetch_values(values)}"
+        print(t)
+        return t
     
     def _destroy_client(self, _, ip, port, client_id) -> str:
         self.client_manager.destroy_client(ip, port, client_id)
         return client_id
     
-    def _register_mqtt(self, _, client_id, features) -> str:
-        values = parse_features_list(features)
+    def _register_mqtt(self, _, client_id, obs) -> str:
+        objects = parse_observables_list(obs)
+    
+        values = []
+        for obj in objects:
+            if isinstance(obj, str):
+                values.append(self.lua.eval(obj))
+            else:
+                values.append(obj.get_value())
         
-        self.client_manager.register_mqtt(client_id, self.req_context.session_id, values)
-        return f"clientReport:1:{fetch_feature_values(values)}"
+        self.client_manager.register_mqtt(self.lua, client_id, self.req_context.session_id, objects)
+        return f"clientReport:1:{fetch_values(values)}"
     
     def _destroy_mqtt(self, _, client_id) -> str:
         self.client_manager.destroy_mqtt(client_id)

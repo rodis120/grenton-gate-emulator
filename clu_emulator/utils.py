@@ -1,6 +1,8 @@
 
 import socket
 
+import lupa.lua53 as lupa
+
 from .objects.feature import DummyFeature
 
 def find_n_character(string: str, char: str, n: int) -> int:
@@ -33,31 +35,34 @@ def key_derivation(secret_key: bytes) -> bytes:
         out[i + 8] = derivation_constant[i + 8] ^ secret_key[7 - i]
     return bytes(out)
 
-def parse_features_list(features: str) -> list:
+def parse_observables_list(obs) -> list:
     values = []
-    for lst in features.values():
-        lst = list(lst.values())
-        obj = lst[0]
-        index = lst[1]
+    for elm in obs.values():
+        if isinstance(elm, str):
+            values.append(elm)
+            continue
+        
+        elm = list(elm.values())
+        obj = elm[0]
+        index = elm[1]
         
         values.append(obj.features.get(index, DummyFeature()))
         
     return values
 
-def fetch_feature_values(features: list) -> str:
-    values = []
-    for feature in features:
-        value = feature.get_value()
+def fetch_values(values: list) -> str:
+    out = []
+    for value in values:
         if isinstance(value, str):
-            values.append(f'"{value}"')
+            out.append(f'"{value}"')
         elif isinstance(value, bool):
-            values.append("true" if value else "false")
+            out.append("true" if value else "false")
         elif value is None:
-            values.append("nil")
+            out.append("nil")
         else:
-            values.append(str(value))
+            out.append(str(value))
     
-    return '{' + ','.join(values) + '}'
+    return '{' + ','.join(out) + '}'
 
 def int_to_ip(ip_int: int) -> str:
     segments = []
